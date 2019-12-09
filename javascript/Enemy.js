@@ -1,3 +1,1 @@
-class Enemy extends Component {
-
-}
+class Enemy extends Component {}

@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 class Component {
   constructor(context, width, height, posX, posY, color) {
     this.c = context;
@@ -13,21 +14,46 @@ class Component {
     this.c.fillRect(this.posX, this.posY, this.width, this.height);
   }
 
-  leftHb() {
+  _leftHb() {
     return this.posX;
   }
 
-  rightHb() {
+  _rightHb() {
     return this.posX + this.width;
   }
 
   // talvez nao precise e eu nao tenho certeza se esta certo
-  topHb() {
+  _topHb() {
     return this.posY;
   }
 
   // talvez nao precise e eu nao tenho certeza se esta certo
-  botHb() {
+  _botHb() {
     return this.posY + this.height;
+  }
+
+  _isRightBorderCollided(that) {
+    return this._rightHb() >= that._leftHb();
+  }
+
+  _isLeftBorderCollided(that) {
+    return this._leftHb() <= that._rightHb();
+  }
+
+  _isTopBorderCollided(that) {
+    return this._topHb() <= that._botHb();
+  }
+
+  _isBottomBorderCollided(that) {
+    return this._botHb() >= that._topHb();
+  }
+
+  isHit(that) {
+    return (
+      this._isRightBorderCollided(that) &&
+      this._isLeftBorderCollided(that) &&
+      this._isTopBorderCollided(that) &&
+      this._isBottomBorderCollided(that)
+    );
   }
 }
