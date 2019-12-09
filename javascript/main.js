@@ -13,7 +13,7 @@ const gameSetup = {
 
   build() {
     this.setCanvasSize(720, 630);
-  }
+  },
 };
 
 const loopControl = {
@@ -46,15 +46,13 @@ const rules = {
   },
   // create instances of components
   createEnemy() {
-    
+    // at the moment there is no difference between boss and enemies.
   },
-  // check player collision against each element in enemyArr
-  // stop game and console.log if any hit is detected.
   isGameover() {
     const isPlayerHit = this.enemyArr.some(e => {
       return player.isHit(e);
     });
-    console.log(isPlayerHit);
+    console.log('is player hit? ',isPlayerHit);
     return isPlayerHit;
     // console.log(loopControl.stop())
   },
