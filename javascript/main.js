@@ -57,7 +57,7 @@ const rules = {
     // console.log(loopControl.stop())
   },
   // check boss colision against player with active status (or something like that)
-  isWin() {},
+  isVictory() {},
 }
 
 
@@ -68,9 +68,11 @@ function update() {
   // start
   boss.draw();
   player.draw();
+  // checa isAttacking? desliga eventListener de input e retorna uma funcao. Essa funcao recebe um array de funcoes e retorna uma delas. Essa funcao manipula o jogador, hitbox, etc...
+
 
   if (rules.isGameover()) {
-    console.log('game over!')
+    console.log('game over!');
     loopControl.stop();
   } else {
     loopControl.start();

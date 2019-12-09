@@ -9,8 +9,8 @@ class Component {
     this.color = color;
   }
 
-  draw() {
-    this.c.fillStyle = this.color;
+  draw(color = this.color) {
+    this.c.fillStyle = color;
     this.c.fillRect(this.posX, this.posY, this.width, this.height);
   }
 
