@@ -2,7 +2,7 @@ let requestId;
 
 const canvas = {
   element: document.getElementById('canvas'),
-  context: document.getElementById('canvas').getContext('2d'),
+  context: document.getElementById('canvas').getContext('2d');
 };
 
 const gameSetup = {
@@ -13,13 +13,13 @@ const gameSetup = {
 
   build() {
     this.setCanvasSize(720, 630);
-  },
+  }
 };
 
 const loopControl = {
   start() {
     if (!requestId) {
-      requestId = window.requestAnimationFrame(gameLoop);
+      requestId = window.requestAnimationFrame(update);
       // return requestId;
     }
   },
@@ -31,21 +31,41 @@ const loopControl = {
     }
   },
   clear() {
-    console.log('hello, clear');
-    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height)
-  },
+    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
+  }
 };
 
-
-function gameLoop() {
+function update() {
   requestId = undefined;
-  console.log('updating...');
-  // do stuff
+  loopControl.clear();
+  // start
+  boss.draw();
+  player.draw();
 
+  // end
   loopControl.start();
 }
 
 gameSetup.build();
 loopControl.start();
-setTimeout(loopControl.clear, 3000);
-setTimeout(loopControl.stop, 5000);
+const boss = new Enemy(
+  canvas.context,
+  160,
+  160,
+  canvas.element.width - 200,
+  canvas.element.height - 200,
+  'yellow'
+);
+
+const player = new Player(
+  canvas.context,
+  40,
+  40,
+  200,
+  canvas.element.height - 200,
+  'red'
+);
+
+console.log(boss);
+// setTimeout(loopControl.clear, 3000);
+// setTimeout(loopControl.stop, 5000);
