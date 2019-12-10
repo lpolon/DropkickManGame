@@ -22,7 +22,7 @@ class Player extends Component {
   }
 
   draw(color = this.color,
-    direction = this.facingDirection
+    direction = this.facingDirection,
     ) {
     this.c.fillStyle = color;
     this.c.fillRect(this.posX, this.posY, this.width, this.height);
@@ -59,16 +59,23 @@ class Player extends Component {
   }
 
   // TODO: attack funcion
-  attack() {
+  startAttack() {
     console.log('attack!');
     this.isAttacking = true;
-    this.drawAttackHitbox();
+  }
+
+  stopAttacking() {
+    console.log('hello, stopAttacking()')
+    this.isAttacking = false;
   }
 
   drawAttackHitbox() {
     this.c.fillStyle = 'rebeccapurple';
-    // TODO: this might clip badly
-    this.c.fillRect(this.posX+5, this.posY-1, this.width, this.height-5);
+    if (this.facingDirection === 'right') {
+      // TODO: this might clip badly
+      this.c.fillRect(this.posX + 10, this.posY-3, this.width, this.height-5);
+    } else {
+      this.c.fillRect(this.posX - 10, this.posY-3, this.width, this.height-5);
+    }
   }
-
 }

@@ -43,7 +43,6 @@ const rules = {
   },
   // create instances of components
   createEnemy() {
-    // at the moment there is no difference between boss and enemies.
   },
   isGameover() {
     const isPlayerHit = this.enemyArr.some(e => {
@@ -73,6 +72,28 @@ const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
 const box = new Enemy(canvas.context, 50, 50, 100, 200, 'pink');
 const box3 = new Enemy(canvas.context, 50, 50, 50, 150, 'yellow');
 
+// LOOP CONTROL AND UPDATE FUNCION
+const loopControl = {
+  start() {
+    if (!requestId) {
+      requestId = window.requestAnimationFrame(update);
+      // return requestId;
+    }
+  },
+  stop() {
+    if (requestId) {
+      console.log('hello, stop');
+      window.cancelAnimationFrame(requestId);
+      requestId = undefined;
+    }
+  },
+  clear() {
+    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
+  },
+};
+
+
+// *** INPUTS ***
 const handleMoveInput = input => {
   switch (input.keyCode) {
     case 37:
@@ -94,32 +115,12 @@ const handleMoveInput = input => {
 
 const handleAttackInput = input => {
   if (input.keyCode === 32) {
-    player.attack();
+    player.startAttack();
   }
 };
 
 document.addEventListener('keydown', handleMoveInput);
 document.addEventListener('keydown', handleAttackInput);
-
-// LOOP CONTROL AND UPDATE FUNCION
-const loopControl = {
-  start() {
-    if (!requestId) {
-      requestId = window.requestAnimationFrame(update);
-      // return requestId;
-    }
-  },
-  stop() {
-    if (requestId) {
-      console.log('hello, stop');
-      window.cancelAnimationFrame(requestId);
-      requestId = undefined;
-    }
-  },
-  clear() {
-    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
-  }
-};
 
 function update(runtime) {
   requestId = undefined;
@@ -146,6 +147,16 @@ function update(runtime) {
     player.draw();
     boss.draw();
 
+    console.log('player.isAttacking?', player.isAttacking)
+
+    // isPlayerAttacking = ;
+
+    if(player.isAttacking) {
+      console.log('XXXXXXXXXXX')
+      player.drawAttackHitbox();
+      setTimeout( () => player.stopAttacking(), 1000);
+    }
+
     delta -= timestep;
     // sanity check
     if (++numUpdateSteps >= 240) {
@@ -169,4 +180,4 @@ gameSetup.build();
 loopControl.start();
 
 // setTimeout(loopControl.clear, 3000);
-// setTimeout(loopControl.stop, 3000);
+// setTimeout(loopControl.stop, 5000);
