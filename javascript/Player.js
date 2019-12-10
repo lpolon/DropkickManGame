@@ -8,7 +8,7 @@ class Player extends Component {
     posX,
     posY,
     color,
-    facingDirection = 'left'
+    facingDirection = 'left',
   ) {
     super();
     this.c = context;
@@ -18,7 +18,7 @@ class Player extends Component {
     this.posY = posY;
     this.color = color;
     this.facingDirection = facingDirection;
-    this.isAttacking = 'false';
+    this.isAttacking = false;
   }
 
   draw(color = this.color,
@@ -57,5 +57,18 @@ class Player extends Component {
   gotBot() {
     this.posY += 10;
   }
+
   // TODO: attack funcion
+  attack() {
+    console.log('attack!');
+    this.isAttacking = true;
+    this.drawAttackHitbox();
+  }
+
+  drawAttackHitbox() {
+    this.c.fillStyle = 'rebeccapurple';
+    // TODO: this might clip badly
+    this.c.fillRect(this.posX+5, this.posY-1, this.width, this.height-5);
+  }
+
 }
