@@ -1,5 +1,5 @@
 class Enemy extends Component {
-  constructor(context, width, height, posX = 10, posY = 200, color) {
+  constructor(context, width, height, posX, posY, color) {
     super();
     this.c = context;
     this.width = width;
@@ -9,15 +9,11 @@ class Enemy extends Component {
     this.color = color;
 
     this.limit = 300;
-    this.velocity = 0.08;
+    this.velocity = 0.08; // tweak it.
   }
 
   move(delta) {
-    // console.log(this.posX);
-    // console.log(this.limit)
     this.posX += this.velocity * delta;
     if (this.posX >= this.limit || this.posX <= 0) this.velocity = -this.velocity;
-    this.c.fillStyle = this.color;
-    this.c.fillRect(this.posX, this.posY, this.width, this.height);
   }
 }

@@ -2,8 +2,10 @@
 
 let requestId;
 let lastFrameTimeMs = 0;
-let maxFPS = 10;
-let delta = 0;
+let maxFPS = 61; // update this value to control maxFPS
+let delta = 0; // elapsed time since last update.
+let timestep = 1000 / 60; // update the denominator to control maxFPS
+
 /* end of global var */
 
 const canvas = {
@@ -23,6 +25,7 @@ const gameSetup = {
 };
 // check for positions and status from everything in canvas.
 const rules = {
+  // this array holds all the checks to che
   enemyArr: [],
   // TODO: check if any enemy is hit by attack array. check if it is a boss.
   attackArr: [],
@@ -31,8 +34,8 @@ const rules = {
       canvas.context,
       80,
       80,
-      canvas.element.width - 200,
-      canvas.element.height - 200,
+      canvas.element.width - 100,
+      canvas.element.height - 100,
       'yellow'
     );
     this.enemyArr.push(boss);
@@ -62,11 +65,13 @@ const player = new Player(
   40,
   40,
   450,
-  canvas.element.height - 250,
+  canvas.element.height - 100,
   'red'
 );
 
+const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
 const box = new Enemy(canvas.context, 50, 50, 100, 200, 'pink');
+const box3 = new Enemy(canvas.context, 50, 50, 50, 150, 'yellow');
 
 const handleMoveInput = input => {
   switch (input.keyCode) {
@@ -116,31 +121,52 @@ const loopControl = {
   }
 };
 
-function update(timestamp) {
+function update(runtime) {
   requestId = undefined;
   loopControl.clear();
-  if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
+
+  if (runtime < lastFrameTimeMs + 1000 / maxFPS) {
     loopControl.start();
     return;
   }
-  delta = timestamp - lastFrameTimeMs;
-  lastFrameTimeMs = timestamp;
-  // boss.draw();
-  // player.draw();
-  box.move(delta); // primeiro move, depois draw.
-  box.draw();
+
+  // track the accumulated time that hasn't been rendered yet
+  delta += runtime - lastFrameTimeMs;
+  lastFrameTimeMs = runtime;
+  // render the total elapsed time in fixed-size chunks
+  var numUpdateSteps = 0;
+  while (delta >= timestep) {
+    // move here
+    box.move(timestep);
+    box.draw();
+    box2.move(timestep);
+    box2.draw();
+    box3.move(timestep);
+    box3.draw();
+    player.draw();
+    boss.draw();
+
+    delta -= timestep;
+    // sanity check
+    if (++numUpdateSteps >= 240) {
+      delta = 0; // fix things
+      break; // bail out;
+    }
+  }
+
   // TODO: checa isAttacking? desliga eventListener de input e retorna uma funcao. Essa funcao recebe um array de funcoes e retorna uma delas. Essa funcao manipula o jogador, hitbox, etc...
   if (rules.isGameover()) {
     console.log('game over!');
     loopControl.stop();
   } else {
-    loopControl.start(timestamp);
+    loopControl.start(runtime);
   }
   // end
 }
+
 gameSetup.build();
 
 loopControl.start();
 
 // setTimeout(loopControl.clear, 3000);
-// setTimeout(loopControl.stop, 5000);
+// setTimeout(loopControl.stop, 3000);
