@@ -1,5 +1,5 @@
+/* eslint-disable no-underscore-dangle */
 // TODO: make super() work properly
-
 class Player extends Component {
   constructor(
     context,
@@ -58,13 +58,13 @@ class Player extends Component {
     this.posY += 10;
   }
 
-  // TODO: attack funcion
+  // TODO: attack function
   startAttack() {
     console.log('attack!');
     this.isAttacking = true;
   }
 
-  stopAttacking() {
+  stopAttack() {
     console.log('hello, stopAttacking()')
     this.isAttacking = false;
   }
@@ -72,10 +72,36 @@ class Player extends Component {
   drawAttackHitbox() {
     this.c.fillStyle = 'rebeccapurple';
     if (this.facingDirection === 'right') {
-      // TODO: this might clip badly
+
       this.c.fillRect(this.posX + 10, this.posY-3, this.width, this.height-5);
     } else {
       this.c.fillRect(this.posX - 10, this.posY-3, this.width, this.height-5);
     }
   }
+
+  _isRightBorderCollided(enemy) {
+    return this._rightCompHb() >= enemy._leftCompHb();
+  }
+
+  _isLeftBorderCollided(enemy) {
+    return this._leftCompHb() <= enemy._rightCompHb();
+  }
+
+  _isTopBorderCollided(enemy) {
+    return this._topCompHb() <= enemy._botCompHb();
+  }
+
+  _isBottomBorderCollided(enemy) {
+    return this._botCompHb() >= enemy._topCompHb();
+  }
+
+  isHitReceived(enemy) {
+    return (
+      this._isRightBorderCollided(enemy) &&
+      this._isLeftBorderCollided(enemy) &&
+      this._isTopBorderCollided(enemy) &&
+      this._isBottomBorderCollided(enemy)
+    );
+  }
+
 }

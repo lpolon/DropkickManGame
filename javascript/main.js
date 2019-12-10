@@ -28,7 +28,6 @@ const rules = {
   // this array holds all the checks to che
   enemyArr: [],
   // TODO: check if any enemy is hit by attack array. check if it is a boss.
-  attackArr: [],
   createBoss() {
     const boss = new Enemy(
       canvas.context,
@@ -46,7 +45,7 @@ const rules = {
   },
   isGameover() {
     const isPlayerHit = this.enemyArr.some(e => {
-      return player.isHit(e);
+      return player.isHitReceived(e);
     });
     // console.log('is player hit? ', isPlayerHit);
     return isPlayerHit;
@@ -147,14 +146,11 @@ function update(runtime) {
     player.draw();
     boss.draw();
 
-    console.log('player.isAttacking?', player.isAttacking)
-
-    // isPlayerAttacking = ;
+    // console.log('player.isAttacking?', player.isAttacking)
 
     if(player.isAttacking) {
-      console.log('XXXXXXXXXXX')
       player.drawAttackHitbox();
-      setTimeout( () => player.stopAttacking(), 1000);
+      setTimeout( () => player.stopAttack(), 500);
     }
 
     delta -= timestep;
