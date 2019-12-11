@@ -49,7 +49,7 @@ const rules = {
       element.height - 40,
       element.width,
       40,
-      'blue',
+      'goldenrod',
     );
     this.floorArr.push(floor);
     return floor;
@@ -62,7 +62,7 @@ const rules = {
       element.height - 120,
       80,
       80,
-      'yellow',
+      'darkred',
       true,
       element.width,
     );
@@ -108,11 +108,6 @@ const rules = {
     );
     this.allCompArr.push(player);
     return player;
-  },
-
-  // when hit floor, set position to the same of the floor. 
-  hitFloor() {
-
   },
 
   gravity(deltaValue) {
