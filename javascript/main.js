@@ -1,30 +1,28 @@
-/* global var */
-let requestId;
-let lastFrameTimeMs = 0;
-let maxFPS = 61; // update this value to control maxFPS
-let delta = 0; // elapsed time since last update.
-let timestep = 1000 / 60; // update the denominator to control maxFPS
-
-let victoryToken;
-let gameOverToken;
-
-/* end of global var */
-
 const canvas = {
   element: document.getElementById('canvas'),
   context: document.getElementById('canvas').getContext('2d')
 };
-
 const gameSetup = {
   setCanvasSize(width, height) {
     canvas.element.width = width;
     canvas.element.height = height;
   },
-
   build() {
     this.setCanvasSize(720, 630);
   }
 };
+
+/* global var */
+let requestId;
+let lastFrameTimeMs = 0;
+const maxFPS = 61; // update this value to control maxFPS
+let delta = 0; // elapsed time since last update.
+const timestep = 1000 / 60; // update the denominator to control maxFPS
+
+let victoryToken;
+let gameOverToken;
+
+/* end of global var */
 // check for positions and status from everything in canvas.
 const rules = {
   // this array holds all the checks to che
