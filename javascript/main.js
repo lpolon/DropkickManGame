@@ -49,7 +49,7 @@ const rules = {
       element.height - 40,
       element.width,
       40,
-      'goldenrod',
+      '#5142f5',
     );
     this.floorArr.push(floor);
     return floor;
@@ -62,7 +62,7 @@ const rules = {
       element.height - 120,
       80,
       80,
-      'darkred',
+      '#f58742',
       true,
       element.width,
     );
