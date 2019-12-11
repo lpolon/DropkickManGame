@@ -41,7 +41,6 @@ const rules = {
   enemyArr: [],
   allCompArr: [],
   floorArr: [],
-  // TODO: check if any enemy is hit by attack array. check if it is a boss.
   createPlatform() {
     const floor = new Component(
       context,
@@ -134,19 +133,18 @@ const rules = {
     const isPlayerHitByBoss = player.isHitTaken(boss);
     return isPlayerHitByEnemy || isPlayerHitByBoss;
   },
-  isHitGiven() {
-    const isEnemyHit = this.enemyArr.some(e => {
-      return player.isHitGiven(e);
+  isHitGivenOnEnemy() {
+    this.enemyArr.forEach((e, i) => {
+      if (player.isHitGiven(e)) {
+        this.enemyArr.splice(i, 1);
+      };
     });
-    return isEnemyHit;
   },
-  // TODO: check if this is working with attack;
   isVictory() {
     return player.isHitGiven(boss);
   }
 };
 
-// TODO: instanciation should be handled by rules
 const floor = rules.createPlatform();
 const boss = rules.createBoss();
 const player = rules.createPlayer();
@@ -173,6 +171,10 @@ const updatePlayerMovement = deltaValue => {
     player.goRight(deltaValue);
   }
 };
+
+const playerAttack = () => {
+  
+}
 
 const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
@@ -206,7 +208,7 @@ document.addEventListener('keyup', handleMoveInputKeyUp);
 const handleAttackInputKeyDown = input => {
   if (input.keyCode === 17) {
     inputStatusObj[input.keyCode] = true;
-    // player.startAttack();
+    player.startAttack();
   }
 };
 document.addEventListener('keydown', handleAttackInputKeyDown);
@@ -242,11 +244,13 @@ function update(runtime) {
     rules.moveAndDrawEnemies();
 
     rules.gravity(timestep);
+    
     if (player.isAttacking) {
       player.drawAttackHitbox();
-      if (rules.isHitGiven()) {
+      if (rules.isVictory()) {
         victoryToken = true;
       }
+      rules.isHitGivenOnEnemy();
       // TODO: this method creates a stack of setTimeOut and delays the next user input.
       setTimeout(() => player.stopAttack(), 500);
     }
