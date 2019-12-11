@@ -28,7 +28,7 @@ const loopControl = {
   },
   clear() {
     canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
-  },
+  }
 };
 
 // global variables
@@ -58,8 +58,7 @@ const rules = {
     return boss;
   },
   // create instances of components
-  createEnemy() {
-  },
+  createEnemy() {},
   isGameover() {
     const isPlayerHit = this.enemyArr.some(e => {
       return player.isHitTaken(e);
@@ -84,44 +83,80 @@ const player = new Player(
   40,
   450,
   canvas.element.height - 100,
-  'red',
+  'red'
 );
 
 const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
 const box = new Enemy(canvas.context, 50, 50, 100, 200, 'pink');
 const box3 = new Enemy(canvas.context, 50, 50, 50, 150, 'yellow');
 
-
 // *** INPUTS ***
-const handleMoveInput = input => {
+
+const inputStatusObj = {
+  17: false,
+  37: false,
+  38: false,
+  39: false,
+  40: false,
+};
+
+const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
     case 37:
-      player.goLeft();
+      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
       break;
     case 38:
-      player.goTop();
+      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
       break;
     case 39:
-      player.goRight();
+      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
       break;
     case 40:
-      player.gotBot();
+      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
+      break;
+    default:
+      break;
+  }
+};
+document.addEventListener('keydown', handleMoveInputKeyDown);
+
+const handleMoveInputKeyUp = input => {
+  switch (input.keyCode) {
+    case 37:
+      inputStatusObj[input.keyCode] = [false, 0];
+      break;
+    case 38:
+      inputStatusObj[input.keyCode] = [false, 0];
+      break;
+    case 39:
+      inputStatusObj[input.keyCode] = [false, 0];
+      break;
+    case 40:
+      inputStatusObj[input.keyCode] = [false, 0];
       break;
     default:
       break;
   }
 };
 
-const handleAttackInput = input => {
+document.addEventListener('keyup', handleMoveInputKeyUp);
+
+
+const handleAttackInputKeyDown = input => {
   if (input.keyCode === 17) {
-    player.startAttack();
+    inputStatusObj[input.keyCode] = true;
+    // player.startAttack();
   }
 };
+document.addEventListener('keydown', handleAttackInputKeyDown);
 
-document.addEventListener('keydown', handleMoveInput);
-document.addEventListener('keydown', handleAttackInput);
-
-
+const handleAttackInputKeyUp = input => {
+  if (input.keyCode === 17) {
+    inputStatusObj[input.keyCode] = false;
+    // player.startAttack();
+  }
+};
+document.addEventListener('keyup', handleAttackInputKeyUp);
 
 function update(runtime) {
   requestId = undefined;
@@ -138,8 +173,15 @@ function update(runtime) {
   // render the total elapsed time in fixed-size chunks
   let numUpdateSteps = 0;
   while (delta >= timestep) {
-
     // move here
+    console.log('left:',
+      inputStatusObj[37]
+      )
+
+      console.log('right: ',
+        inputStatusObj[39]
+        )
+
     box.move(timestep);
     box.draw();
     box2.move(timestep);
@@ -149,14 +191,13 @@ function update(runtime) {
     player.draw();
     boss.draw();
 
-
-    if(player.isAttacking) {
+    if (player.isAttacking) {
       player.drawAttackHitbox();
       if (rules.isVictory()) {
         victoryToken = true;
       }
       // TODO: this method creates a stack of setTimeOut and delays the next user input.
-      setTimeout( () => player.stopAttack(), 500);
+      setTimeout(() => player.stopAttack(), 500);
     }
 
     if (rules.isGameover()) {
@@ -188,4 +229,4 @@ gameSetup.build();
 loopControl.start();
 
 // setTimeout(loopControl.clear, 3000);
-// setTimeout(loopControl.stop, 5000);
+setTimeout(loopControl.stop, 5000);
