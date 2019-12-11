@@ -1,14 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 class Player extends Component {
-  constructor(
-    context,
-    width,
-    height,
-    posX,
-    posY,
-    color,
-    facingDirection = 'right'
-  ) {
+  constructor(context, posX, posY, width, height, color, horizontalLimit, facingDirection = 'right',) {
     super();
     this.c = context;
     this.width = width;
@@ -16,6 +8,7 @@ class Player extends Component {
     this.posX = posX;
     this.posY = posY;
     this.color = color;
+    this.horizontalLimit = horizontalLimit;
 
     this.facingDirection = facingDirection;
     this.isAttacking = false;
@@ -53,6 +46,7 @@ class Player extends Component {
   // TODO: use velocityX. fix leftover velocityX.
   goLeft(deltaValue) {
     this.facingDirection = 'left';
+    if (this.posX <= 0) return;
     // this.velocityX -= 0.02;
     // this.posX += this.velocityX * deltaValue;
     this.posX -= 4;
@@ -60,6 +54,7 @@ class Player extends Component {
 
   goRight(deltaValue) {
     this.facingDirection = 'right';
+    if (this.posX >= this.horizontalLimit) return;
     // this.velocityX += 0.02;
     // this.posX += this.velocityX * deltaValue;
     this.posX += 4;
