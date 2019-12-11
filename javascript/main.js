@@ -8,7 +8,7 @@ const gameSetup = {
     canvas.element.height = height;
   },
   build() {
-    this.setCanvasSize(720, 630);
+    this.setCanvasSize(720, 300);
   }
 };
 
@@ -53,8 +53,8 @@ const rules = {
       canvas.context,
       80,
       80,
-      canvas.element.width - 100,
-      canvas.element.height - 100,
+      canvas.element.width,
+      canvas.element.height,
       'yellow', true,
     );
     this.allCompArr.push(boss);
@@ -262,3 +262,5 @@ gameSetup.build();
 loopControl.start();
 
 // setTimeout(loopControl.clear, 3000);
+console.log(canvas.element.width)
+console.log(canvas.element.height)
