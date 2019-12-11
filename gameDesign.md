@@ -8,3 +8,6 @@ dark gray to look like DK NES game, but not full dark for lesser eye straining.
 
 ## attack hitbox:
 ahead and a bit up from the player
+
+## 
+velocity * .9, .8 to create small slide movement.

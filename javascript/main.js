@@ -1,10 +1,12 @@
 /* global var */
-
 let requestId;
 let lastFrameTimeMs = 0;
 let maxFPS = 61; // update this value to control maxFPS
 let delta = 0; // elapsed time since last update.
 let timestep = 1000 / 60; // update the denominator to control maxFPS
+
+let victoryToken;
+let gameOverToken;
 
 /* end of global var */
 
@@ -45,14 +47,22 @@ const rules = {
   },
   isGameover() {
     const isPlayerHit = this.enemyArr.some(e => {
-      return player.isHitReceived(e);
+      return player.isHitTaken(e);
     });
     // console.log('is player hit? ', isPlayerHit);
     return isPlayerHit;
     // console.log(loopControl.stop())
   },
   // check boss colision against player with active status (or something like that)
-  isVictory() {}
+  // TODO: boss is been treated as any other enemy.
+  isVictory() {
+    const isEnemyHit = this.enemyArr.some(e => {
+      return player.isHitGiven(e);
+    });
+    // console.log('is player hit? ', isPlayerHit);
+    return isEnemyHit;
+    // console.log(loopControl.stop())
+  }
 };
 
 /* calls */
@@ -64,7 +74,7 @@ const player = new Player(
   40,
   450,
   canvas.element.height - 100,
-  'red'
+  'red',
 );
 
 const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
@@ -150,7 +160,25 @@ function update(runtime) {
 
     if(player.isAttacking) {
       player.drawAttackHitbox();
+      if (rules.isVictory()) {
+        victoryToken = true;
+      }
+      // TODO: this method creates a stack of setTimeOut and delays the next user input.
       setTimeout( () => player.stopAttack(), 500);
+    }
+
+    if (rules.isGameover()) {
+      gameOverToken = true;
+    }
+
+    if (victoryToken) {
+      console.log('victory');
+      loopControl.stop();
+    } else if (gameOverToken) {
+      console.log('game over!');
+      loopControl.stop();
+    } else {
+      loopControl.start();
     }
 
     delta -= timestep;
@@ -159,14 +187,6 @@ function update(runtime) {
       delta = 0; // fix things
       break; // bail out;
     }
-  }
-
-  // TODO: checa isAttacking? desliga eventListener de input e retorna uma funcao. Essa funcao recebe um array de funcoes e retorna uma delas. Essa funcao manipula o jogador, hitbox, etc...
-  if (rules.isGameover()) {
-    console.log('game over!');
-    loopControl.stop();
-  } else {
-    loopControl.start(runtime);
   }
   // end
 }
