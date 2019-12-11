@@ -113,13 +113,15 @@ const handleMoveInput = input => {
 };
 
 const handleAttackInput = input => {
-  if (input.keyCode === 32) {
+  if (input.keyCode === 17) {
     player.startAttack();
   }
 };
 
 document.addEventListener('keydown', handleMoveInput);
 document.addEventListener('keydown', handleAttackInput);
+
+
 
 function update(runtime) {
   requestId = undefined;
@@ -134,7 +136,7 @@ function update(runtime) {
   delta += runtime - lastFrameTimeMs;
   lastFrameTimeMs = runtime;
   // render the total elapsed time in fixed-size chunks
-  var numUpdateSteps = 0;
+  let numUpdateSteps = 0;
   while (delta >= timestep) {
 
     // move here
