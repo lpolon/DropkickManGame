@@ -41,9 +41,12 @@ const timestep = 1000 / 60; // update the denominator to control maxFPS
 let victoryToken;
 let gameOverToken;
 
+let frequencyInMs = 1000;
+
 // controller of game rules
 const rules = {
   enemyArr: [],
+  allCompArr: [],
   // TODO: check if any enemy is hit by attack array. check if it is a boss.
   createBoss() {
     const boss = new Enemy(
@@ -52,66 +55,98 @@ const rules = {
       80,
       canvas.element.width - 100,
       canvas.element.height - 100,
-      'yellow'
+      'yellow', true,
     );
-    this.enemyArr.push(boss);
+    this.allCompArr.push(boss);
     return boss;
   },
   // create instances of components
-  createEnemy() {},
+  createEnemy(runtime, frequencyInMs, bossPositionX, bossPositionY) {
+    // console.log('hello, create enemy function')
+    // console.log(parseInt(runtime, 10));
+    // console.log(frequencyInMs);
+    // console.log('result: ', parseInt(runtime, 10) % frequencyInMs);
+    // TODO: after about 30 seconds this becomes inconsistent.
+    if (Math.floor(parseInt(runtime, 10)) % frequencyInMs > frequencyInMs - 17) {
+      console.log('create enemy! ', runtime);
+      const enemy = new Enemy(canvas.context, 50, 50, bossPositionX - 10, bossPositionY, 'pink');
+      this.allCompArr.push(enemy);
+      this.enemyArr.push(enemy);
+      return enemy;
+    }
+
+  },
+
+  createPlayer() {
+    const player = new Player(
+      canvas.context,
+      40,
+      40,
+      450,
+      canvas.element.height - 100,
+      'red',
+    );
+    this.allCompArr.push(player);
+    return player;
+  },
+
   isGameover() {
-    const isPlayerHit = this.enemyArr.some(e => {
+    const isPlayerHitByEnemy = this.enemyArr.some(e => {
       return player.isHitTaken(e);
     });
-    return isPlayerHit;
+    const isPlayerHitByBoss = player.isHitTaken(boss);
+    return isPlayerHitByEnemy || isPlayerHitByBoss;
   },
-  // TODO: boss is been treated as any other enemy.
-  isVictory() {
+  isHitGiven() {
     const isEnemyHit = this.enemyArr.some(e => {
       return player.isHitGiven(e);
     });
     return isEnemyHit;
+  },
+  // TODO: check if this is working with attack;
+  isVictory() {
+    return player.isHitGiven(boss);
   }
 };
 
 // TODO: instanciation should be handled by rules
 const boss = rules.createBoss();
+const player = rules.createPlayer();
 
-const player = new Player(
-  canvas.context,
-  40,
-  40,
-  450,
-  canvas.element.height - 100,
-  'red'
-);
-
-const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
-const box = new Enemy(canvas.context, 50, 50, 100, 200, 'pink');
-const box3 = new Enemy(canvas.context, 50, 50, 50, 150, 'yellow');
+// const box2 = new Enemy(canvas.context, 40, 40, 150, 250, 'red');
+// const box = new Enemy(canvas.context, 40, 40, 100, 200, 'pink');
+// const box3 = new Enemy(canvas.context, 40, 40, 50, 150, 'yellow');
 
 // *** INPUTS ***
 
 const inputStatusObj = {
-  17: false,
-  37: false,
-  38: false,
-  39: false,
-  40: false,
+  17: [false, 0],
+  37: [false, 0],
+  39: [false, 0],
 };
+
+const updatePlayerMovement = (deltaValue) => {
+  if (inputStatusObj[37][0] && inputStatusObj[39][0]) {
+    if (inputStatusObj[37][1] > inputStatusObj[39][1]) {
+      player.goLeft(deltaValue);
+    } else {
+      player.goRight(deltaValue);
+    }
+  }
+  if (inputStatusObj[37][0]) {
+    player.goLeft(deltaValue);
+  }
+  if (inputStatusObj[39][0]) {
+    player.goRight(deltaValue);
+  }
+}
 
 const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
     case 37:
       inputStatusObj[input.keyCode] = [true, new Date().getTime()];
       break;
-    case 38:
-      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
-      break;
     case 39:
-      inputStatusObj[input.keyCode] = [true, new Date().getTime()];
-      break;
-    case 40:
       inputStatusObj[input.keyCode] = [true, new Date().getTime()];
       break;
     default:
@@ -125,13 +160,7 @@ const handleMoveInputKeyUp = input => {
     case 37:
       inputStatusObj[input.keyCode] = [false, 0];
       break;
-    case 38:
-      inputStatusObj[input.keyCode] = [false, 0];
-      break;
     case 39:
-      inputStatusObj[input.keyCode] = [false, 0];
-      break;
-    case 40:
       inputStatusObj[input.keyCode] = [false, 0];
       break;
     default:
@@ -174,26 +203,30 @@ function update(runtime) {
   let numUpdateSteps = 0;
   while (delta >= timestep) {
     // move here
-    console.log('left:',
-      inputStatusObj[37]
-      )
 
-      console.log('right: ',
-        inputStatusObj[39]
-        )
+    rules.createEnemy(runtime, frequencyInMs, boss.posX, boss.posY);
 
-    box.move(timestep);
-    box.draw();
-    box2.move(timestep);
-    box2.draw();
-    box3.move(timestep);
-    box3.draw();
+    const moveAndDrawEnemies = () => {
+      rules.enemyArr.forEach( e => {
+        e.move(timestep);
+        e.draw();
+      } )
+    }
+    moveAndDrawEnemies();
+    // box.move(timestep);
+    // box.draw();
+    // box2.move(timestep);
+    // box2.draw();
+    // box3.move(timestep);
+    // box3.draw();
+
+    updatePlayerMovement(timestep);
     player.draw();
     boss.draw();
 
     if (player.isAttacking) {
       player.drawAttackHitbox();
-      if (rules.isVictory()) {
+      if (rules.isHitGiven()) {
         victoryToken = true;
       }
       // TODO: this method creates a stack of setTimeOut and delays the next user input.
@@ -229,4 +262,3 @@ gameSetup.build();
 loopControl.start();
 
 // setTimeout(loopControl.clear, 3000);
-setTimeout(loopControl.stop, 5000);
