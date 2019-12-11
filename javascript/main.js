@@ -12,7 +12,26 @@ const gameSetup = {
   }
 };
 
-/* global var */
+const loopControl = {
+  start() {
+    if (!requestId) {
+      requestId = window.requestAnimationFrame(update);
+      // return requestId;
+    }
+  },
+  stop() {
+    if (requestId) {
+      console.log('hello, stop');
+      window.cancelAnimationFrame(requestId);
+      requestId = undefined;
+    }
+  },
+  clear() {
+    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
+  },
+};
+
+// global variables
 let requestId;
 let lastFrameTimeMs = 0;
 const maxFPS = 61; // update this value to control maxFPS
@@ -22,10 +41,8 @@ const timestep = 1000 / 60; // update the denominator to control maxFPS
 let victoryToken;
 let gameOverToken;
 
-/* end of global var */
-// check for positions and status from everything in canvas.
+// controller of game rules
 const rules = {
-  // this array holds all the checks to che
   enemyArr: [],
   // TODO: check if any enemy is hit by attack array. check if it is a boss.
   createBoss() {
@@ -47,23 +64,18 @@ const rules = {
     const isPlayerHit = this.enemyArr.some(e => {
       return player.isHitTaken(e);
     });
-    // console.log('is player hit? ', isPlayerHit);
     return isPlayerHit;
-    // console.log(loopControl.stop())
   },
-  // check boss colision against player with active status (or something like that)
   // TODO: boss is been treated as any other enemy.
   isVictory() {
     const isEnemyHit = this.enemyArr.some(e => {
       return player.isHitGiven(e);
     });
-    // console.log('is player hit? ', isPlayerHit);
     return isEnemyHit;
-    // console.log(loopControl.stop())
   }
 };
 
-/* calls */
+// TODO: instanciation should be handled by rules
 const boss = rules.createBoss();
 
 const player = new Player(
@@ -78,26 +90,6 @@ const player = new Player(
 const box2 = new Enemy(canvas.context, 50, 50, 150, 250, 'red');
 const box = new Enemy(canvas.context, 50, 50, 100, 200, 'pink');
 const box3 = new Enemy(canvas.context, 50, 50, 50, 150, 'yellow');
-
-// LOOP CONTROL AND UPDATE FUNCION
-const loopControl = {
-  start() {
-    if (!requestId) {
-      requestId = window.requestAnimationFrame(update);
-      // return requestId;
-    }
-  },
-  stop() {
-    if (requestId) {
-      console.log('hello, stop');
-      window.cancelAnimationFrame(requestId);
-      requestId = undefined;
-    }
-  },
-  clear() {
-    canvas.context.clearRect(0, 0, canvas.element.width, canvas.element.height);
-  },
-};
 
 
 // *** INPUTS ***
@@ -144,6 +136,7 @@ function update(runtime) {
   // render the total elapsed time in fixed-size chunks
   var numUpdateSteps = 0;
   while (delta >= timestep) {
+
     // move here
     box.move(timestep);
     box.draw();
@@ -154,7 +147,6 @@ function update(runtime) {
     player.draw();
     boss.draw();
 
-    // console.log('player.isAttacking?', player.isAttacking)
 
     if(player.isAttacking) {
       player.drawAttackHitbox();

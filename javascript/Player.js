@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-// TODO: make super() work properly
 class Player extends Component {
   constructor(
     context,
