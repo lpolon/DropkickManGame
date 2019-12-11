@@ -7,7 +7,7 @@ class Player extends Component {
     posX,
     posY,
     color,
-    facingDirection = 'left'
+    facingDirection = 'right'
   ) {
     super();
     this.c = context;
@@ -19,6 +19,8 @@ class Player extends Component {
 
     this.facingDirection = facingDirection;
     this.isAttacking = false;
+    this.velocityX = 0.00; //
+    this.velocityY = 0.4;
   }
 
   draw(color = this.color, direction = this.facingDirection) {
@@ -48,22 +50,23 @@ class Player extends Component {
   }
 
   // *** PLAYER MOVEMENT ***
-  goLeft() {
+  // TODO: use velocityX. fix leftover velocityX.
+  goLeft(deltaValue) {
     this.facingDirection = 'left';
-    this.posX += -10;
+    // this.velocityX -= 0.02;
+    // this.posX += this.velocityX * deltaValue;
+    this.posX -= 4;
   }
 
-  goRight() {
+  goRight(deltaValue) {
     this.facingDirection = 'right';
-    this.posX += 10;
+    // this.velocityX += 0.02;
+    // this.posX += this.velocityX * deltaValue;
+    this.posX += 4;
   }
 
-  goTop() {
-    this.posY += -10;
-  }
-
-  gotBot() {
-    this.posY += 10;
+  fall(deltaValue) {
+    this.posY += this.velocityY * deltaValue;
   }
 
   // *** PLAYER HITBOX ***
