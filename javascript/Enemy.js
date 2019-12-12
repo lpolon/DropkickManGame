@@ -29,6 +29,17 @@ class Enemy extends Component {
     }
   }
 
+  bigbossMove() {
+    const generateRandomNumberInArr = (min, max) => {return Math.random() * (max - min) + min}
+    const randomNumber = generateRandomNumberInArr(1, 100);
+    if (randomNumber >= 80) {
+      this.posX -= this.velocityX * delta;
+      if (this.posX >= element.width - this.width || this.posX <= 0) {
+        this.velocityX = -this.velocityX
+      }
+    }
+  }
+
   fall(deltaValue) {
     this.velocityY = 0.3;
     this.posY += this.velocityY * deltaValue;

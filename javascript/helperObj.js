@@ -18,4 +18,7 @@ const helper = {
   resumeJumpInputListening() {
     document.addEventListener('keydown', handleJumpInputKeyDown);
   },
+  generateRandomNumberInArr(min, max) {
+    return Math.random() * (max - min) + min
+  }
 };
