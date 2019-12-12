@@ -388,7 +388,7 @@ function update(runtime) {
     boss1.draw();
     boss2.draw();
     boss2.bigbossMove();
-    player.draw();
+    player.drawStanding();
 
     if (player.isAttacking) {
       helper.stopInputs();
@@ -403,7 +403,7 @@ function update(runtime) {
         attackFrameCounter += 1;
         player.drawAttackHitbox();
         // TODO: attack frames here
-        
+
       } else {
         player.stopAttack();
         helper.resumeInput();

@@ -16,7 +16,7 @@ class Player extends Component {
     this.velocityY = 0.4;
   }
 
-  draw(color = this.color, direction = this.facingDirection) {
+  drawStanding(color = this.color, direction = this.facingDirection) {
     this.c.fillStyle = color;
     this.c.fillRect(this.posX, this.posY, this.width, this.height);
     this.drawFacingDirection(direction);
@@ -58,6 +58,9 @@ class Player extends Component {
       13,
     )
   }
+
+  // drawKicking() {
+  // }
 
   // *** PLAYER MOVEMENT ***
   // TODO: use velocityX. fix leftover velocityX.
