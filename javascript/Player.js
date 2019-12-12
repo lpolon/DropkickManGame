@@ -54,14 +54,13 @@ class Player extends Component {
 
   goRight(deltaValue) {
     this.facingDirection = 'right';
-    if (this.posX >= this.horizontalLimit - this.width) return;
+    if (this.posX >= this.horizontalLimit - this.width-5) return;
     // this.velocityX += 0.02;
     // this.posX += this.velocityX * deltaValue;
     this.posX += 4;
   }
 
   goLeftWhileJumping(deltaValue) {
-    console.log('hello floaty left')
     this.facingDirection = 'left';
     if (this.posX <= 0) return;
     // this.velocityX -= 0.02;
@@ -70,9 +69,8 @@ class Player extends Component {
   }
 
   goRightWhileJumping(deltaValue) {
-    console.log('hello floaty right')
     this.facingDirection = 'right';
-    if (this.posX >= this.horizontalLimit) return;
+    if (this.posX >= this.horizontalLimit-5) return;
     // this.velocityX += 0.02;
     // this.posX += this.velocityX * deltaValue;
     this.posX += 6.5;
