@@ -54,7 +54,7 @@ class Player extends Component {
 
   goRight(deltaValue) {
     this.facingDirection = 'right';
-    if (this.posX >= this.horizontalLimit) return;
+    if (this.posX >= this.horizontalLimit - this.width) return;
     // this.velocityX += 0.02;
     // this.posX += this.velocityX * deltaValue;
     this.posX += 4;

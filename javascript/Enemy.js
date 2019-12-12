@@ -11,13 +11,12 @@ class Enemy extends Component {
     this.horizontalLimit = horizontalLimit;
 
     this.velocityX = 0.08; // tweak it.
-    this.velocityY = 0.3;
-    // this.velocityY
+    this.velocityY = 0.4;
   }
 
   move(delta) {
     this.posX -= this.velocityX * delta;
-    // if (this.posX >= this.limit || this.posX <= 0) this.velocityX = -this.velocityX;
+    if (this.posX >= element.width - this.width || this.posX <= 0) this.velocityX = -this.velocityX;
   }
 
   fall(deltaValue) {

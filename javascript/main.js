@@ -2,7 +2,7 @@ const element = document.getElementById('canvas');
 const context = document.getElementById('canvas').getContext('2d');
 
 element.width = 720;
-element.height = 620;
+element.height = 600;
 
 let requestId;
 let lastFrameTimeMs = 0;
@@ -45,14 +45,7 @@ const rules = {
   allCompArr: [],
   floorArr: [],
   createPlatform(w, h, width) {
-    const floor = new Component(
-      context,
-      w,
-      h - 20,
-      width,
-      20,
-      '#5142f5'
-    );
+    const floor = new Component(context, w, h - 20, width, 20, '#5142f5');
     this.floorArr.push(floor);
     return floor;
   },
@@ -62,8 +55,8 @@ const rules = {
       context,
       element.width - 100,
       element.height - 120,
-      80,
-      80,
+      60,
+      60,
       '#f58742',
       true,
       element.width
@@ -99,7 +92,7 @@ const rules = {
   },
 
   createPlayer() {
-    const player = new Player(context, 10, 10, 40, 40, 'red', element.width);
+    const player = new Player(context, 10, 430, 40, 48, 'red', element.width);
     this.allCompArr.push(player);
     return player;
   },
@@ -111,6 +104,30 @@ const rules = {
           e.velocityY = 0;
         } else {
           e.posY = this.floorArr[0].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[1])) {
+        if (e.posY === this.floorArr[1].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[1].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[2])) {
+        if (e.posY === this.floorArr[2].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[2].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[3])) {
+        if (e.posY === this.floorArr[3].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[3].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[4])) {
+        if (e.posY === this.floorArr[4].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[4].posY - e.height;
         }
       } else {
         e.fall(deltaValue);
@@ -144,17 +161,31 @@ const rules = {
   }
 };
 
-const floor = rules.createPlatform(
+const floor0 = rules.createPlatform(0, element.height, element.width);
+const floor1 = rules.createPlatform(
+  element.width / 1.5 - 1,
+  element.height - 80,
+  element.width
+);
+
+const floor2 = rules.createPlatform(
   0,
-  element.height,
-  element.width,
-  );
-  const floor2 = rules.createPlatform(
-    // element.width / 1.5 - 1,
-    0,
-    element.height - 80,
-    element.width,
-  )
+  element.height - 190,
+  element.width / 2,
+);
+
+const floor3 = rules.createPlatform(
+  element.width / 1.8,
+  element.height - 320,
+  element.width / 3
+);
+
+const floor4 = rules.createPlatform(
+  0,
+  element.height - 450,
+  element.width / 2.2
+);
+
 const boss = rules.createBoss();
 const player = rules.createPlayer();
 // *** INPUTS ***
@@ -182,7 +213,7 @@ const updateJumpInput = deltaValue => {
 const updatePlayerMovement = deltaValue => {
   if (inputStatusObj[37][0] && inputStatusObj[39][0]) {
     if (inputStatusObj[37][1] > inputStatusObj[39][1]) {
-      if(!inputStatusObj[38][0]) {
+      if (!inputStatusObj[38][0]) {
         player.goLeft(deltaValue);
       } else {
         player.goLeftWhileJumping(deltaValue);
@@ -196,18 +227,17 @@ const updatePlayerMovement = deltaValue => {
     }
   }
   if (inputStatusObj[37][0]) {
-    if(!inputStatusObj[38][0]) {
+    if (!inputStatusObj[38][0]) {
       player.goLeft(deltaValue);
     } else {
-      player.goLeftWhileJumping(deltaValue)
+      player.goLeftWhileJumping(deltaValue);
     }
   }
   if (inputStatusObj[39][0]) {
-    if(!inputStatusObj[38][0]) {
+    if (!inputStatusObj[38][0]) {
       player.goRight(deltaValue);
     } else {
       player.goRightWhileJumping(deltaValue);
-
     }
   }
 };
@@ -285,8 +315,11 @@ function update(runtime) {
   let numUpdateSteps = 0;
   while (delta >= timestep) {
     // do everything here:
-    floor.draw();
+    floor0.draw();
+    floor1.draw();
     floor2.draw();
+    floor3.draw();
+    floor4.draw();
     if (player.velocityY === 0) {
       helper.resumeJumpInputListening();
     }

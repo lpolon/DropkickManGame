@@ -17,5 +17,5 @@ const helper = {
   },
   resumeJumpInputListening() {
     document.addEventListener('keydown', handleJumpInputKeyDown);
-  }
-}
+  },
+};
