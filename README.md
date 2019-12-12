@@ -13,4 +13,4 @@ dropkick everything. dropkick the boss to win.
 https://lpolon.github.io/DropkickManGame/
 
 ## Thanks
-thanks to [https://isaacsukin.com] (Isaac Sukin) for his amazing blog posts and well-documented resources that helped me along this little project.
+thanks to Isaac Sukin @ isaacsukin.com for his amazing blog posts and well-documented resources that helped me along this little project.
