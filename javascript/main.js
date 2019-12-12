@@ -20,7 +20,7 @@ let playerJumpMaxHeight = 110;
 
 const randomFrequency = helper.generateRandomNumberInArr(1500, 4000);
 
-let frequencyInMs = randomFrequency;
+const frequencyInMs = randomFrequency;
 
 const loopControl = {
   start() {
