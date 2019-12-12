@@ -8,3 +8,6 @@ dropkick everything. dropkick the boss to win.
 ## How to Play
 - move left and right with arrow keys
 - DROPKICK pressing left ctrl.
+
+## link to play
+https://lpolon.github.io/DropkickManGame/

@@ -13,7 +13,7 @@ const timestep = 1000 / 60; // update the denominator to control maxFPS
 let victoryToken;
 let gameOverToken;
 
-let frequencyInMs = 1500;
+let frequencyInMs = 2000;
 
 const loopControl = {
   start() {
@@ -79,7 +79,7 @@ const rules = {
       Math.floor(parseInt(runtime, 10)) % frequencyInMs >
       frequencyInMs - 17
     ) {
-      console.log('create enemy! ', runtime);
+      // console.log('create enemy! ', runtime);
       const enemy = new Enemy(
         context,
         bossPositionX - 50,
