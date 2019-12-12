@@ -21,6 +21,7 @@ class Enemy extends Component {
   }
 
   fall(deltaValue) {
+    this.velocityY = 0.3;
     this.posY += this.velocityY * deltaValue;
   }
 
