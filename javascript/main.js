@@ -378,20 +378,9 @@ function update(runtime) {
     updateJumpInput(timestep);
     updatePlayerMovement(timestep);
 
-    const boss0PosX = boss0.posX;
-    const boss0PosY = boss0.posY;
-
-    const boss1PosX = boss1.posX;
-    const boss1PosY = boss1.posY;
-
-    const boss2PosX = boss2.posX;
-    const boss2PosY = boss2.posY;
-
-    rules.createEnemy(runtime, frequencyInMs, boss0PosX, boss0PosY);
-
-    rules.createEnemy(runtime, frequencyInMs, boss1PosX, boss1PosY);
-
-    rules.createEnemy(runtime, frequencyInMs, boss2PosX, boss2PosY);
+    rules.createEnemy(runtime, frequencyInMs, boss0.posX, boss0.posY);
+    rules.createEnemy(runtime, frequencyInMs, boss1.posX, boss1.posY);
+    rules.createEnemy(runtime, frequencyInMs, boss2.posX, boss2.posY);
 
     rules.gravity(timestep);
     rules.moveAndDrawEnemies();
@@ -412,9 +401,9 @@ function update(runtime) {
       if (runtime < endAttackTimeStamp) {
         console.log(attackFrameCounter);
         attackFrameCounter += 1;
-        // console.log('i am attack!');
         player.drawAttackHitbox();
         // TODO: attack frames here
+        
       } else {
         player.stopAttack();
         helper.resumeInput();

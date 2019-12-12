@@ -20,6 +20,7 @@ class Player extends Component {
     this.c.fillStyle = color;
     this.c.fillRect(this.posX, this.posY, this.width, this.height);
     this.drawFacingDirection(direction);
+    this.drawPants();
   }
 
   drawFacingDirection(facingDirection) {
@@ -28,18 +29,34 @@ class Player extends Component {
       this.c.fillRect(
         this.posX + 19,
         this.posY + 5,
-        this.width - this.width / 2,
-        this.height - this.height / 2
+        this.width - this.width / 1.7,
+        this.height - this.height / 1.4
       );
     } else if (facingDirection === 'left') {
       this.c.fillStyle = 'black';
       this.c.fillRect(
-        this.posX + 1,
+        this.posX + 5,
         this.posY + 5,
-        this.width - this.width / 2,
-        this.height - this.height / 2
+        this.width - this.width / 1.7,
+        this.height - this.height / 1.4
       );
     }
+  }
+
+  drawPants() {
+    this.c.fillStyle = 'black';
+    this.c.fillRect(
+      this.posX,
+      this.posY + 32,
+      this.width,
+      3,
+    )
+    this.c.fillRect(
+      this.posX+18,
+      this.posY+35,
+      5,
+      13,
+    )
   }
 
   // *** PLAYER MOVEMENT ***
