@@ -1,6 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 class Enemy extends Component {
-  constructor(context, posX, posY, width, height, color, horizontalLimit) {
+  constructor(
+    context,
+    posX,
+    posY,
+    width,
+    height,
+    color,
+    isFinalBoss = false,
+    ) {
     super();
     this.c = context;
     this.width = width;
@@ -8,15 +16,17 @@ class Enemy extends Component {
     this.posX = posX;
     this.posY = posY;
     this.color = color;
-    this.horizontalLimit = horizontalLimit;
+    this.isFinalBoss = isFinalBoss;
 
     this.velocityX = 0.08; // tweak it.
     this.velocityY = 0.4;
   }
 
   move(delta) {
-    this.posX -= this.velocityX * delta;
-    if (this.posX >= element.width - this.width || this.posX <= 0) this.velocityX = -this.velocityX;
+      this.posX -= this.velocityX * delta;
+    if (this.posX >= element.width - this.width || this.posX <= 0) {
+      this.velocityX = -this.velocityX
+    }
   }
 
   fall(deltaValue) {
