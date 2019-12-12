@@ -1,8 +1,10 @@
 # DropkickManGame
 
-## loop control function made using help from the interwebs:
-https://isaacsukin.com/news/2015/01/detailed-explanation-javascript-game-loops-and-timing
+# intro
+This is a NES' donkey kong inspired game. However, instead of playing a "jumpman" - the former Mario alias - you are the Drop kick man.
 
-### known issues:
-@main line 154
-setTimeout is called for N frames
+dropkick everything. dropkick the boss to win.
+
+## How to Play
+- move left and right with arrow keys
+- DROPKICK pressing left ctrl.
