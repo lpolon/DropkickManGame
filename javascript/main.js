@@ -249,11 +249,9 @@ function update(runtime) {
     
     if (player.isAttacking) {
       helper.stopInputs();
-      // holds timestamp of startAttack
       if (!startAttackTimestamp) {
         startAttackTimestamp = runtime;
       }
-      // startAttackTimestamp.push(runtime);
       const attackDuration = 1000;
       const endAttackTimeStamp = startAttackTimestamp + attackDuration;
       
