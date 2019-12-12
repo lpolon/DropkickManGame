@@ -44,13 +44,13 @@ const rules = {
   enemyArr: [],
   allCompArr: [],
   floorArr: [],
-  createPlatform() {
+  createPlatform(w, h, width) {
     const floor = new Component(
       context,
-      0,
-      element.height - 40,
-      element.width,
-      40,
+      w,
+      h - 20,
+      width,
+      20,
       '#5142f5'
     );
     this.floorArr.push(floor);
@@ -144,7 +144,17 @@ const rules = {
   }
 };
 
-const floor = rules.createPlatform();
+const floor = rules.createPlatform(
+  0,
+  element.height,
+  element.width,
+  );
+  const floor2 = rules.createPlatform(
+    // element.width / 1.5 - 1,
+    0,
+    element.height - 80,
+    element.width,
+  )
 const boss = rules.createBoss();
 const player = rules.createPlayer();
 // *** INPUTS ***
@@ -276,6 +286,7 @@ function update(runtime) {
   while (delta >= timestep) {
     // do everything here:
     floor.draw();
+    floor2.draw();
     if (player.velocityY === 0) {
       helper.resumeJumpInputListening();
     }
