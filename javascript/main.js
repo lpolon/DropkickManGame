@@ -13,6 +13,10 @@ const timestep = 1000 / 60; // update the denominator to control maxFPS
 let victoryToken;
 let gameOverToken;
 
+let startAttackTimestamp;
+let attackFrameCounter = 0;
+
+
 let frequencyInMs = 2000;
 
 const loopControl = {
@@ -33,8 +37,6 @@ const loopControl = {
     context.clearRect(0, 0, element.width, element.height);
   }
 };
-
-// global variables
 
 // controller of game rules
 const rules = {
@@ -246,15 +248,37 @@ function update(runtime) {
     rules.gravity(timestep);
     
     if (player.isAttacking) {
-      player.drawAttackHitbox();
+      helper.stopInputs();
+      // holds timestamp of startAttack
+      if (!startAttackTimestamp) {
+        startAttackTimestamp = runtime;
+      }
+      // startAttackTimestamp.push(runtime);
+      const attackDuration = 1000;
+      const endAttackTimeStamp = startAttackTimestamp + attackDuration;
+      
+      if (runtime < endAttackTimeStamp) {
+        attackFrameCounter += 1;
+        console.log(attackFrameCounter);
+        console.log('i am attack!')
+        player.drawAttackHitbox() // attack function.
+      } else {
+        player.stopAttack();
+        helper.resumeInput();
+        startAttackTimestamp = undefined;
+        attackFrameCounter = 0;
+      }
       if (rules.isVictory()) {
         victoryToken = true;
       }
       rules.isHitGivenOnEnemy();
-      // TODO: this method creates a stack of setTimeOut and delays the next user input.
-      setTimeout(() => player.stopAttack(), 500);
-    }
 
+      // resume inputs
+
+      // setTimeout(() => player.stopAttack(), 500);
+      // setTimeout( () => helper.resumeInput(), 500);
+      // startAttackTimestamp = undefined;
+    }
     if (rules.isGameover()) {
       gameOverToken = true;
     }
