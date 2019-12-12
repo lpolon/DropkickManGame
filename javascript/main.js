@@ -2,7 +2,7 @@ const element = document.getElementById('canvas');
 const context = document.getElementById('canvas').getContext('2d');
 
 element.width = 720;
-element.height = 400;
+element.height = 620;
 
 let requestId;
 let lastFrameTimeMs = 0;
@@ -285,13 +285,11 @@ function update(runtime) {
     }
     updateJumpInput(timestep);
     updatePlayerMovement(timestep);
+    rules.createEnemy(runtime, frequencyInMs, boss.posX, boss.posY);
+    rules.gravity(timestep);
+    rules.moveAndDrawEnemies();
     player.draw();
     boss.draw();
-    rules.createEnemy(runtime, frequencyInMs, boss.posX, boss.posY);
-
-    rules.moveAndDrawEnemies();
-
-    rules.gravity(timestep);
 
     if (player.isAttacking) {
       helper.stopInputs();
