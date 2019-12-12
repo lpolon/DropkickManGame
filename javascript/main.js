@@ -15,7 +15,8 @@ let gameOverToken;
 
 let startAttackTimestamp;
 let attackFrameCounter = 0;
-
+let playerStartPosY; // isJumpingFlag
+let playerJumpMaxHeight = 110;
 
 let frequencyInMs = 2000;
 
@@ -50,7 +51,7 @@ const rules = {
       element.height - 40,
       element.width,
       40,
-      '#5142f5',
+      '#5142f5'
     );
     this.floorArr.push(floor);
     return floor;
@@ -65,7 +66,7 @@ const rules = {
       80,
       '#f58742',
       true,
-      element.width,
+      element.width
     );
     this.allCompArr.push(boss);
     return boss;
@@ -86,10 +87,10 @@ const rules = {
         context,
         bossPositionX - 50,
         bossPositionY,
-        40,
-        40,
+        30,
+        30,
         'pink',
-        element.width,
+        element.width
       );
       this.allCompArr.push(enemy);
       this.enemyArr.push(enemy);
@@ -98,25 +99,21 @@ const rules = {
   },
 
   createPlayer() {
-    const player = new Player(
-      context,
-      10,
-      10,
-      40,
-      40,
-      'red',
-      element.width,
-    );
+    const player = new Player(context, 10, 10, 40, 40, 'red', element.width);
     this.allCompArr.push(player);
     return player;
   },
 
   gravity(deltaValue) {
-    this.allCompArr.forEach((e) => { 
+    this.allCompArr.forEach(e => {
       if (e.isHitTaken(this.floorArr[0])) {
-        e.posY = this.floorArr[0].posY - e.height;
+        if (e.posY === this.floorArr[0].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[0].posY - e.height;
+        }
       } else {
-        e.fall(deltaValue) 
+        e.fall(deltaValue);
       }
     });
   },
@@ -139,7 +136,7 @@ const rules = {
     this.enemyArr.forEach((e, i) => {
       if (player.isHitGiven(e)) {
         this.enemyArr.splice(i, 1);
-      };
+      }
     });
   },
   isVictory() {
@@ -155,29 +152,56 @@ const player = rules.createPlayer();
 const inputStatusObj = {
   17: [false, 0],
   37: [false, 0],
+  38: [false, 0],
   39: [false, 0]
+};
+
+const updateJumpInput = deltaValue => {
+  if (inputStatusObj[38][0]) {
+    helper.stopJumpInputListening();
+    console.log('jump!');
+    if (!playerStartPosY) {
+      playerStartPosY = player.posY;
+    }
+    player.jump(deltaValue);
+  } else {
+    playerStartPosY = undefined;
+  }
 };
 
 const updatePlayerMovement = deltaValue => {
   if (inputStatusObj[37][0] && inputStatusObj[39][0]) {
     if (inputStatusObj[37][1] > inputStatusObj[39][1]) {
-      player.goLeft(deltaValue);
+      if(!inputStatusObj[38][0]) {
+        player.goLeft(deltaValue);
+      } else {
+        player.goLeftWhileJumping(deltaValue);
+      }
     } else {
-      player.goRight(deltaValue);
+      if (!inputStatusObj[38][0]) {
+        player.goRight(deltaValue);
+      } else {
+        player.goRightWhileJumping(deltaValue);
+      }
     }
   }
   if (inputStatusObj[37][0]) {
-    player.goLeft(deltaValue);
+    if(!inputStatusObj[38][0]) {
+      player.goLeft(deltaValue);
+    } else {
+      player.goLeftWhileJumping(deltaValue)
+    }
   }
   if (inputStatusObj[39][0]) {
-    player.goRight(deltaValue);
+    if(!inputStatusObj[38][0]) {
+      player.goRight(deltaValue);
+    } else {
+      player.goRightWhileJumping(deltaValue);
+
+    }
   }
 };
-
-const playerAttack = () => {
-  
-}
-
+// TODO make player.jump() happen
 const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
     case 37:
@@ -223,6 +247,20 @@ const handleAttackInputKeyUp = input => {
 };
 document.addEventListener('keyup', handleAttackInputKeyUp);
 
+const handleJumpInputKeyDown = input => {
+  if (input.keyCode === 38) {
+    inputStatusObj[input.keyCode] = [true, new Date().getTime()];
+  }
+};
+document.addEventListener('keydown', handleJumpInputKeyDown);
+
+const handleJumpInputKeyUp = input => {
+  if (input.keyCode === 38) {
+    inputStatusObj[input.keyCode] = [false, new Date().getTime()];
+  }
+};
+document.addEventListener('keyup', handleJumpInputKeyUp);
+
 function update(runtime) {
   requestId = undefined;
   loopControl.clear();
@@ -238,6 +276,14 @@ function update(runtime) {
   while (delta >= timestep) {
     // do everything here:
     floor.draw();
+    if (player.velocityY === 0) {
+      helper.resumeJumpInputListening();
+    }
+    console.log(player.posY);
+    if (player.posY < playerStartPosY - playerJumpMaxHeight) {
+      inputStatusObj[38][0] = false;
+    }
+    updateJumpInput(timestep);
     updatePlayerMovement(timestep);
     player.draw();
     boss.draw();
@@ -246,20 +292,21 @@ function update(runtime) {
     rules.moveAndDrawEnemies();
 
     rules.gravity(timestep);
-    
+
     if (player.isAttacking) {
       helper.stopInputs();
       if (!startAttackTimestamp) {
         startAttackTimestamp = runtime;
       }
-      const attackDuration = 1000;
+      const attackDuration = 850;
       const endAttackTimeStamp = startAttackTimestamp + attackDuration;
-      
+
       if (runtime < endAttackTimeStamp) {
         attackFrameCounter += 1;
         console.log(attackFrameCounter);
-        console.log('i am attack!')
-        player.drawAttackHitbox() // attack function.
+        console.log('i am attack!');
+        player.drawAttackHitbox();
+        // TODO: attack frames here
       } else {
         player.stopAttack();
         helper.resumeInput();
@@ -301,4 +348,3 @@ function update(runtime) {
   // end
 }
 loopControl.start();
-console.log(player.horizontalLimit);

@@ -60,7 +60,31 @@ class Player extends Component {
     this.posX += 4;
   }
 
+  goLeftWhileJumping(deltaValue) {
+    console.log('hello floaty left')
+    this.facingDirection = 'left';
+    if (this.posX <= 0) return;
+    // this.velocityX -= 0.02;
+    // this.posX += this.velocityX * deltaValue;
+    this.posX -= 6.5;
+  }
+
+  goRightWhileJumping(deltaValue) {
+    console.log('hello floaty right')
+    this.facingDirection = 'right';
+    if (this.posX >= this.horizontalLimit) return;
+    // this.velocityX += 0.02;
+    // this.posX += this.velocityX * deltaValue;
+    this.posX += 6.5;
+  }
+
   fall(deltaValue) {
+    this.velocityY = 0.4;
+    this.posY += this.velocityY * deltaValue;
+  }
+
+  jump(deltaValue) {
+    this.velocityY = -0.85;
     this.posY += this.velocityY * deltaValue;
   }
 
