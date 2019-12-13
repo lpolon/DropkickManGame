@@ -414,6 +414,7 @@ function update(runtime) {
         logger.style.backgroundColor = 'green'
         logger.className = 'logger';
         document.getElementById('overlay').style.display = 'flex'
+        document.addEventListener('keydown', reloadPage);
       }, 2000)
     } else if (gameOverToken) {
       player.drawDead();
@@ -431,9 +432,10 @@ function update(runtime) {
 
     delta -= timestep;
     // sanity check
-    if (++numUpdateSteps >= 300) {
+    if (++numUpdateSteps >= 240) {
       delta = 0; // fix things
-      break; // bail out;
+      reloadPage();
+      // break; // bail out;
     }
   }
   // end
@@ -448,12 +450,12 @@ const handleStartGame = input => {
   }
 };
 
-const reloadPage = (input) => {
+function reloadPage (input) {
   if (input.keyCode === 32) {
     window.location.reload(false);
     document.getElementById('overlay').style.display = 'none';
   }
 }
 
-setTimeout( () => {startFlag = true}, 20000);
+setTimeout(() => {startFlag = true}, 20000);
 document.addEventListener('keydown', handleStartGame);
