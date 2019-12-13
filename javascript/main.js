@@ -18,9 +18,9 @@ let attackFrameCounter = 0;
 let playerStartPosY; // isJumpingFlag
 let playerJumpMaxHeight = 110;
 
-const randomFrequency = helper.generateRandomNumberInArr(1500, 4000);
-
+let randomFrequency = 3200;
 const frequencyInMs = randomFrequency;
+let startFlag;
 
 const loopControl = {
   start() {
@@ -31,7 +31,6 @@ const loopControl = {
   },
   stop() {
     if (requestId) {
-      console.log('hello, stop');
       window.cancelAnimationFrame(requestId);
       requestId = undefined;
     }
@@ -55,15 +54,7 @@ const rules = {
   },
 
   createBoss(w, h, width, height, color, isFinalBoss) {
-    const aBoss = new Enemy(
-      context,
-      w,
-      h,
-      width,
-      height,
-      color,
-      isFinalBoss,
-    );
+    const aBoss = new Enemy(context, w, h, width, height, color, isFinalBoss);
     this.allCompArr.push(aBoss);
     this.bossArr.push(aBoss);
     return aBoss;
@@ -80,7 +71,7 @@ const rules = {
         bossPositionY,
         30,
         30,
-        'yellow',
+        'yellow'
       );
       this.allCompArr.push(enemy);
       this.enemyArr.push(enemy);
@@ -89,15 +80,7 @@ const rules = {
   },
 
   createPlayer() {
-    const player = new Player(
-      context,
-      120,
-      430,
-      40,
-      48,
-      'red',
-      element.width,
-      );
+    const player = new Player(context, 120, 430, 40, 48, 'red', element.width);
     this.allCompArr.push(player);
     return player;
   },
@@ -166,7 +149,6 @@ const rules = {
     });
     this.bossArr.forEach((e, i) => {
       if (player.isHitGiven(e)) {
-        // console.log(this.bossArr.splice(i, 1))
         // this.bossArr.splice(i, 1);
         e.posX = 10000; // splice just didn't work
       }
@@ -175,13 +157,10 @@ const rules = {
 
   isVictory() {
     return player.isHitGiven(boss2);
-  },
+  }
 };
 
-const floor0 = rules.createPlatform(
-  0,
-  element.height,
-  element.width);
+const floor0 = rules.createPlatform(0, element.height, element.width);
 
 const floor1 = rules.createPlatform(
   element.width / 1.5 - 1,
@@ -189,11 +168,7 @@ const floor1 = rules.createPlatform(
   element.width
 );
 
-const floor2 = rules.createPlatform(
-  0,
-  element.height - 190,
-  element.width / 2,
-);
+const floor2 = rules.createPlatform(0, element.height - 190, element.width / 2);
 
 const floor3 = rules.createPlatform(
   element.width / 1.8,
@@ -213,7 +188,7 @@ const boss0 = rules.createBoss(
   60,
   60,
   '#f58742',
-  false,
+  false
 );
 
 const boss1 = rules.createBoss(
@@ -222,8 +197,8 @@ const boss1 = rules.createBoss(
   60,
   60,
   '#f58742',
-  false,
-)
+  false
+);
 
 const boss2 = rules.createBoss(
   60,
@@ -231,8 +206,8 @@ const boss2 = rules.createBoss(
   80,
   80,
   'crimson',
-  true,
-)
+  true
+);
 
 const player = rules.createPlayer();
 // *** INPUTS ***
@@ -247,7 +222,6 @@ const inputStatusObj = {
 const updateJumpInput = deltaValue => {
   if (inputStatusObj[38][0]) {
     helper.stopJumpInputListening();
-    console.log('jump!');
     if (!playerStartPosY) {
       playerStartPosY = player.posY;
     }
@@ -350,9 +324,9 @@ document.addEventListener('keyup', handleJumpInputKeyUp);
 function update(runtime) {
   requestId = undefined;
   loopControl.clear();
-  if (runtime < lastFrameTimeMs + 1000 / maxFPS) {
-    loopControl.start();
-    return;
+    if (runtime < lastFrameTimeMs + 1000 / maxFPS) {
+      loopControl.start();
+      return;
   }
   // track the accumulated time that hasn't been rendered yet
   delta += runtime - lastFrameTimeMs;
@@ -385,10 +359,11 @@ function update(runtime) {
     boss0.draw();
     boss1.draw();
     boss2.draw();
-    boss2.bigbossMove();
+    if (startFlag) {
+      boss2.bigbossMove();
+    }
     if (!startAttackTimestamp) {
       player.drawStanding();
-      // player.drawDead()
     }
 
     if (player.isAttacking) {
@@ -401,15 +376,12 @@ function update(runtime) {
       const endAttackTimeStamp = startAttackTimestamp + attackDuration;
 
       if (runtime < endAttackTimeStamp) {
-        console.log(attackFrameCounter);
         attackFrameCounter += 1;
         // player.drawAttackHitbox();
         // TODO: attack frames here
         if (attackFrameCounter < 15) {
-          console.log('setup!')
           player.drawSetup();
         } else if (attackFrameCounter >= 15 && attackFrameCounter <= 42) {
-          console.log('attack!')
           player.drawAttackHitbox();
           player.drawKicking();
           player.DROPKICK(timestep);
@@ -430,22 +402,36 @@ function update(runtime) {
     }
     if (rules.isGameover()) {
       gameOverToken = true;
+
     }
 
     if (victoryToken) {
-      console.log('victory');
       loopControl.stop();
+      setTimeout(() => {
+        let logger = document.getElementById('logger');
+        logger.innerText = `YOU DID IT! \n
+        (ಥ﹏ಥ)`
+        logger.style.backgroundColor = 'green'
+        logger.className = 'logger';
+        document.getElementById('overlay').style.display = 'flex'
+      }, 2000)
     } else if (gameOverToken) {
-      console.log('game over!');
       player.drawDead();
       loopControl.stop();
+      setTimeout(() => {
+        logger.innerText = `GAME OVER \n \n (ง'̀-'́)ง TRY AGAIN!`
+        logger.style.backgroundColor = 'red'
+        logger.className = 'logger';
+        document.getElementById('overlay').style.display = 'flex'
+        document.addEventListener('keydown', reloadPage);
+      }, 800)
     } else {
       loopControl.start();
     }
 
     delta -= timestep;
     // sanity check
-    if (++numUpdateSteps >= 240) {
+    if (++numUpdateSteps >= 300) {
       delta = 0; // fix things
       break; // bail out;
     }
@@ -453,4 +439,21 @@ function update(runtime) {
   // end
 }
 
-loopControl.start();
+const handleStartGame = input => {
+  if (input.keyCode === 32) {
+    document.getElementById('overlay').style.display = 'none';
+    document.removeEventListener('keydown', handleStartGame);
+    randomFrequency = helper.generateRandomNumberInArr(2800, 3800);
+    loopControl.start();
+  }
+};
+
+const reloadPage = (input) => {
+  if (input.keyCode === 32) {
+    window.location.reload(false);
+    document.getElementById('overlay').style.display = 'none';
+  }
+}
+
+setTimeout( () => {startFlag = true}, 20000);
+document.addEventListener('keydown', handleStartGame);

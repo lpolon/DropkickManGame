@@ -283,12 +283,10 @@ class Player extends Component {
 
   // *** ATTACK STATE ***
   startAttack() {
-    console.log('attack!');
     this.isAttacking = true;
   }
 
   stopAttack() {
-    console.log('hello, stopAttacking()');
     this.isAttacking = false;
   }
 
