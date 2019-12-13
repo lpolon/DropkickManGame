@@ -2,7 +2,7 @@ const element = document.getElementById('canvas');
 const context = document.getElementById('canvas').getContext('2d');
 
 element.width = 720;
-element.height = 400;
+element.height = 600;
 
 let requestId;
 let lastFrameTimeMs = 0;
@@ -13,7 +13,14 @@ const timestep = 1000 / 60; // update the denominator to control maxFPS
 let victoryToken;
 let gameOverToken;
 
-let frequencyInMs = 2000;
+let startAttackTimestamp;
+let attackFrameCounter = 0;
+let playerStartPosY; // isJumpingFlag
+let playerJumpMaxHeight = 110;
+
+const randomFrequency = helper.generateRandomNumberInArr(1500, 4000);
+
+const frequencyInMs = randomFrequency;
 
 const loopControl = {
   start() {
@@ -34,60 +41,46 @@ const loopControl = {
   }
 };
 
-// global variables
-
 // controller of game rules
 const rules = {
   enemyArr: [],
   allCompArr: [],
   floorArr: [],
-  createPlatform() {
-    const floor = new Component(
-      context,
-      0,
-      element.height - 40,
-      element.width,
-      40,
-      '#5142f5',
-    );
+  bossArr: [],
+
+  createPlatform(w, h, width) {
+    const floor = new Component(context, w, h - 20, width, 20, '#5142f5');
     this.floorArr.push(floor);
     return floor;
   },
 
-  createBoss() {
-    const boss = new Enemy(
+  createBoss(w, h, width, height, color, isFinalBoss) {
+    const aBoss = new Enemy(
       context,
-      element.width - 100,
-      element.height - 120,
-      80,
-      80,
-      '#f58742',
-      true,
-      element.width,
+      w,
+      h,
+      width,
+      height,
+      color,
+      isFinalBoss,
     );
-    this.allCompArr.push(boss);
-    return boss;
+    this.allCompArr.push(aBoss);
+    this.bossArr.push(aBoss);
+    return aBoss;
   },
   // create instances of components
   createEnemy(runtime, frequencyInMs, bossPositionX, bossPositionY) {
-    // console.log('hello, create enemy function')
-    // console.log(parseInt(runtime, 10));
-    // console.log(frequencyInMs);
-    // console.log('result: ', parseInt(runtime, 10) % frequencyInMs);
-    // TODO: after about 30 seconds this becomes inconsistent.
     if (
       Math.floor(parseInt(runtime, 10)) % frequencyInMs >
       frequencyInMs - 17
     ) {
-      // console.log('create enemy! ', runtime);
       const enemy = new Enemy(
         context,
-        bossPositionX - 50,
+        bossPositionX,
         bossPositionY,
-        40,
-        40,
-        'pink',
-        element.width,
+        30,
+        30,
+        'yellow',
       );
       this.allCompArr.push(enemy);
       this.enemyArr.push(enemy);
@@ -98,23 +91,51 @@ const rules = {
   createPlayer() {
     const player = new Player(
       context,
-      10,
-      10,
+      120,
+      430,
       40,
-      40,
+      48,
       'red',
       element.width,
-    );
+      );
     this.allCompArr.push(player);
     return player;
   },
 
   gravity(deltaValue) {
-    this.allCompArr.forEach((e) => { 
+    this.allCompArr.forEach(e => {
       if (e.isHitTaken(this.floorArr[0])) {
-        e.posY = this.floorArr[0].posY - e.height;
+        if (e.posY === this.floorArr[0].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[0].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[1])) {
+        if (e.posY === this.floorArr[1].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[1].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[2])) {
+        if (e.posY === this.floorArr[2].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[2].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[3])) {
+        if (e.posY === this.floorArr[3].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[3].posY - e.height;
+        }
+      } else if (e.isHitTaken(this.floorArr[4])) {
+        if (e.posY === this.floorArr[4].posY - e.height) {
+          e.velocityY = 0;
+        } else {
+          e.posY = this.floorArr[4].posY - e.height;
+        }
       } else {
-        e.fall(deltaValue) 
+        e.fall(deltaValue);
       }
     });
   },
@@ -130,52 +151,143 @@ const rules = {
     const isPlayerHitByEnemy = this.enemyArr.some(e => {
       return player.isHitTaken(e);
     });
-    const isPlayerHitByBoss = player.isHitTaken(boss);
-    return isPlayerHitByEnemy || isPlayerHitByBoss;
+    const isPlayerHitByBoss = this.bossArr.some(e => {
+      return player.isHitTaken(e);
+    });
+    const isPlayerHitByFinalBoss = player.isHitTaken(boss2);
+    return isPlayerHitByEnemy || isPlayerHitByBoss || isPlayerHitByFinalBoss;
   },
+
   isHitGivenOnEnemy() {
     this.enemyArr.forEach((e, i) => {
       if (player.isHitGiven(e)) {
         this.enemyArr.splice(i, 1);
-      };
+      }
+    });
+    this.bossArr.forEach((e, i) => {
+      if (player.isHitGiven(e)) {
+        // console.log(this.bossArr.splice(i, 1))
+        // this.bossArr.splice(i, 1);
+        e.posX = 10000; // splice just didn't work
+      }
     });
   },
+
   isVictory() {
-    return player.isHitGiven(boss);
-  }
+    return player.isHitGiven(boss2);
+  },
 };
 
-const floor = rules.createPlatform();
-const boss = rules.createBoss();
+const floor0 = rules.createPlatform(
+  0,
+  element.height,
+  element.width);
+
+const floor1 = rules.createPlatform(
+  element.width / 1.5 - 1,
+  element.height - 80,
+  element.width
+);
+
+const floor2 = rules.createPlatform(
+  0,
+  element.height - 190,
+  element.width / 2,
+);
+
+const floor3 = rules.createPlatform(
+  element.width / 1.8,
+  element.height - 320,
+  element.width / 3
+);
+
+const floor4 = rules.createPlatform(
+  0,
+  element.height - 450,
+  element.width / 2.2
+);
+
+const boss0 = rules.createBoss(
+  element.width - 100,
+  element.height - 120,
+  60,
+  60,
+  '#f58742',
+  false,
+);
+
+const boss1 = rules.createBoss(
+  80,
+  element.height - 350,
+  60,
+  60,
+  '#f58742',
+  false,
+)
+
+const boss2 = rules.createBoss(
+  60,
+  element.height - 500,
+  80,
+  80,
+  'crimson',
+  true,
+)
+
 const player = rules.createPlayer();
 // *** INPUTS ***
 
 const inputStatusObj = {
   17: [false, 0],
   37: [false, 0],
+  38: [false, 0],
   39: [false, 0]
+};
+
+const updateJumpInput = deltaValue => {
+  if (inputStatusObj[38][0]) {
+    helper.stopJumpInputListening();
+    console.log('jump!');
+    if (!playerStartPosY) {
+      playerStartPosY = player.posY;
+    }
+    player.jump(deltaValue);
+  } else {
+    playerStartPosY = undefined;
+  }
 };
 
 const updatePlayerMovement = deltaValue => {
   if (inputStatusObj[37][0] && inputStatusObj[39][0]) {
     if (inputStatusObj[37][1] > inputStatusObj[39][1]) {
-      player.goLeft(deltaValue);
+      if (!inputStatusObj[38][0]) {
+        player.goLeft(deltaValue);
+      } else {
+        player.goLeftWhileJumping(deltaValue);
+      }
     } else {
-      player.goRight(deltaValue);
+      if (!inputStatusObj[38][0]) {
+        player.goRight(deltaValue);
+      } else {
+        player.goRightWhileJumping(deltaValue);
+      }
     }
   }
   if (inputStatusObj[37][0]) {
-    player.goLeft(deltaValue);
+    if (!inputStatusObj[38][0]) {
+      player.goLeft(deltaValue);
+    } else {
+      player.goLeftWhileJumping(deltaValue);
+    }
   }
   if (inputStatusObj[39][0]) {
-    player.goRight(deltaValue);
+    if (!inputStatusObj[38][0]) {
+      player.goRight(deltaValue);
+    } else {
+      player.goRightWhileJumping(deltaValue);
+    }
   }
 };
-
-const playerAttack = () => {
-  
-}
-
 const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
     case 37:
@@ -221,6 +333,20 @@ const handleAttackInputKeyUp = input => {
 };
 document.addEventListener('keyup', handleAttackInputKeyUp);
 
+const handleJumpInputKeyDown = input => {
+  if (input.keyCode === 38) {
+    inputStatusObj[input.keyCode] = [true, new Date().getTime()];
+  }
+};
+document.addEventListener('keydown', handleJumpInputKeyDown);
+
+const handleJumpInputKeyUp = input => {
+  if (input.keyCode === 38) {
+    inputStatusObj[input.keyCode] = [false, new Date().getTime()];
+  }
+};
+document.addEventListener('keyup', handleJumpInputKeyUp);
+
 function update(runtime) {
   requestId = undefined;
   loopControl.clear();
@@ -235,26 +361,73 @@ function update(runtime) {
   let numUpdateSteps = 0;
   while (delta >= timestep) {
     // do everything here:
-    floor.draw();
-    updatePlayerMovement(timestep);
-    player.draw();
-    boss.draw();
-    rules.createEnemy(runtime, frequencyInMs, boss.posX, boss.posY);
 
-    rules.moveAndDrawEnemies();
+    floor0.draw();
+    floor1.draw();
+    floor2.draw();
+    floor3.draw();
+    floor4.draw();
+    if (player.velocityY === 0) {
+      helper.resumeJumpInputListening();
+    }
+    if (player.posY < playerStartPosY - playerJumpMaxHeight) {
+      inputStatusObj[38][0] = false;
+    }
+    updateJumpInput(timestep);
+    updatePlayerMovement(timestep);
+
+    rules.createEnemy(runtime, frequencyInMs, boss0.posX, boss0.posY);
+    rules.createEnemy(runtime, frequencyInMs, boss1.posX, boss1.posY);
+    rules.createEnemy(runtime, frequencyInMs, boss2.posX, boss2.posY);
 
     rules.gravity(timestep);
-    
-    if (player.isAttacking) {
-      player.drawAttackHitbox();
-      if (rules.isVictory()) {
-        victoryToken = true;
-      }
-      rules.isHitGivenOnEnemy();
-      // TODO: this method creates a stack of setTimeOut and delays the next user input.
-      setTimeout(() => player.stopAttack(), 500);
+    rules.moveAndDrawEnemies();
+    boss0.draw();
+    boss1.draw();
+    boss2.draw();
+    boss2.bigbossMove();
+    if (!startAttackTimestamp) {
+      player.drawStanding();
+      // player.drawDead()
     }
 
+    if (player.isAttacking) {
+      helper.stopInputs();
+      helper.stopJumpInputListening();
+      if (!startAttackTimestamp) {
+        startAttackTimestamp = runtime;
+      }
+      const attackDuration = 1000;
+      const endAttackTimeStamp = startAttackTimestamp + attackDuration;
+
+      if (runtime < endAttackTimeStamp) {
+        console.log(attackFrameCounter);
+        attackFrameCounter += 1;
+        // player.drawAttackHitbox();
+        // TODO: attack frames here
+        if (attackFrameCounter < 15) {
+          console.log('setup!')
+          player.drawSetup();
+        } else if (attackFrameCounter >= 15 && attackFrameCounter <= 42) {
+          console.log('attack!')
+          player.drawAttackHitbox();
+          player.drawKicking();
+          player.DROPKICK(timestep);
+          if (rules.isVictory()) {
+            victoryToken = true;
+          }
+          rules.isHitGivenOnEnemy();
+        } else if (attackFrameCounter > 42) {
+          player.drawDead();
+          player.StopDropKick(timestep);
+        }
+      } else {
+        attackFrameCounter = 0;
+        startAttackTimestamp = undefined;
+        player.stopAttack();
+        helper.resumeInput();
+      }
+    }
     if (rules.isGameover()) {
       gameOverToken = true;
     }
@@ -264,6 +437,7 @@ function update(runtime) {
       loopControl.stop();
     } else if (gameOverToken) {
       console.log('game over!');
+      player.drawDead();
       loopControl.stop();
     } else {
       loopControl.start();
@@ -278,5 +452,5 @@ function update(runtime) {
   }
   // end
 }
+
 loopControl.start();
-console.log(player.horizontalLimit);

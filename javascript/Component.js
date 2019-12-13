@@ -1,13 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 class Component {
-  constructor(context, posX, posY, width, height, color, horizontalLimit) {
+  constructor(context, posX, posY, width, height, color) {
     this.c = context;
     this.width = width;
     this.height = height;
     this.posX = posX;
     this.posY = posY;
     this.color = color;
-    this.horizontalLimit = horizontalLimit;
   }
 
   draw() {
