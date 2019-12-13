@@ -247,7 +247,6 @@ const inputStatusObj = {
 const updateJumpInput = deltaValue => {
   if (inputStatusObj[38][0]) {
     helper.stopJumpInputListening();
-    // TODO stop listening to jumps
     console.log('jump!');
     if (!playerStartPosY) {
       playerStartPosY = player.posY;
@@ -289,7 +288,6 @@ const updatePlayerMovement = deltaValue => {
     }
   }
 };
-// TODO make player.jump() happen
 const handleMoveInputKeyDown = input => {
   switch (input.keyCode) {
     case 37:
@@ -388,33 +386,47 @@ function update(runtime) {
     boss1.draw();
     boss2.draw();
     boss2.bigbossMove();
-    player.drawStanding();
+    if (!startAttackTimestamp) {
+      player.drawStanding();
+      // player.drawDead()
+    }
 
     if (player.isAttacking) {
       helper.stopInputs();
+      helper.stopJumpInputListening();
       if (!startAttackTimestamp) {
         startAttackTimestamp = runtime;
       }
-      const attackDuration = 850;
+      const attackDuration = 1000;
       const endAttackTimeStamp = startAttackTimestamp + attackDuration;
 
       if (runtime < endAttackTimeStamp) {
         console.log(attackFrameCounter);
         attackFrameCounter += 1;
-        player.drawAttackHitbox();
+        // player.drawAttackHitbox();
         // TODO: attack frames here
-
+        if (attackFrameCounter < 15) {
+          console.log('setup!')
+          player.drawSetup();
+        } else if (attackFrameCounter >= 15 && attackFrameCounter <= 42) {
+          console.log('attack!')
+          player.drawAttackHitbox();
+          player.drawKicking();
+          player.DROPKICK(timestep);
+          if (rules.isVictory()) {
+            victoryToken = true;
+          }
+          rules.isHitGivenOnEnemy();
+        } else if (attackFrameCounter > 42) {
+          player.drawDead();
+          player.StopDropKick(timestep);
+        }
       } else {
+        attackFrameCounter = 0;
+        startAttackTimestamp = undefined;
         player.stopAttack();
         helper.resumeInput();
-        startAttackTimestamp = undefined;
-        attackFrameCounter = 0;
       }
-      if (rules.isVictory()) {
-        victoryToken = true;
-      }
-
-      rules.isHitGivenOnEnemy();
     }
     if (rules.isGameover()) {
       gameOverToken = true;
@@ -425,6 +437,7 @@ function update(runtime) {
       loopControl.stop();
     } else if (gameOverToken) {
       console.log('game over!');
+      player.drawDead();
       loopControl.stop();
     } else {
       loopControl.start();
